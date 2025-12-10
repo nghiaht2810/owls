@@ -17,5 +17,6 @@ urlpatterns = [
     path('api/auth/', include('apps.users.urls')),
 ]
 
-if settings.DEBUG:
+# Serve media files locally in development (if not using Cloudinary)
+if settings.DEBUG and not settings.CLOUDINARY_STORAGE.get('CLOUD_NAME'):
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -30,7 +30,7 @@ class LessonSerializer(serializers.ModelSerializer):
             'video_url', 'order', 'is_completed'
         ]
 
-    def get_is_completed(self, obj):
+    def get_is_completed(self, obj) -> bool:
         """
         Kiểm tra xem User đang login đã học xong bài này chưa.
         Lấy user từ context request.
@@ -98,7 +98,7 @@ class CourseListSerializer(serializers.ModelSerializer):
             'status', 'total_lessons'
         ]
     
-    def get_total_lessons(self, obj):
+    def get_total_lessons(self, obj) -> int:
         # Đếm tổng số bài học qua các module
         return Lesson.objects.filter(module__course=obj).count()
 

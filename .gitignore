@@ -11,6 +11,9 @@ db.sqlite3
 /media/
 *.log
 
+# Note: Media files are stored in database, not filesystem
+# /media/ kept in .gitignore for safety
+
 # VS Code
 .vscode/
 

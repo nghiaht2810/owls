@@ -85,6 +85,7 @@ class LessonViewSet(viewsets.GenericViewSet):
     Chúng ta không cần list/retrieve ở đây vì đã gộp vào CourseDetail rồi.
     """
     queryset = Lesson.objects.all()
+    serializer_class = LessonSerializer
     lookup_field = 'id'
     permission_classes = [IsAuthenticated]
 
