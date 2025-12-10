@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Course, Module, Lesson, Review
+from .models import Category, Course, Module, Lesson, Review, UserLessonProgress
 
 # Dùng StackedInline để hiện Bài học ngay trong trang sửa Module
 class LessonInline(admin.StackedInline):
@@ -39,3 +39,10 @@ class LessonAdmin(admin.ModelAdmin):
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
     list_display = ['user', 'course', 'rating', 'created_at']
+
+@admin.register(UserLessonProgress)
+class UserLessonProgressAdmin(admin.ModelAdmin):
+    list_display = ['user', 'lesson', 'is_completed', 'last_watched_position', 'updated_at']
+    list_filter = ['is_completed', 'lesson__module__course']
+    search_fields = ['user__username', 'lesson__title']
+    readonly_fields = ['created_at', 'updated_at']

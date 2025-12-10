@@ -1,18 +1,20 @@
-# backend/urls.py
-# ... (giữ nguyên các import cũ)
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls.static import static
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     
-    # API Courses (Core)
-    path('api/', include('apps.courses.urls')),
+    # API Documentation
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     
-    # API Auth (Mới thêm) -> Sẽ tạo ra các link: /api/auth/login/, /api/auth/register/
-    path('api/auth/', include('apps.users.urls')), 
+    # API Endpoints
+    path('api/', include('apps.courses.urls')),
+    path('api/auth/', include('apps.users.urls')),
 ]
 
 if settings.DEBUG:
