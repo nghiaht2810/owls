@@ -3,10 +3,11 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 class UserSerializer(serializers.ModelSerializer):
-    """Dùng để trả về thông tin user (Profile)"""
+    avatar = serializers.ImageField(source='profile.avatar', read_only=True) # Lấy từ Profile
+    
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'avatar']
 
 class RegisterSerializer(serializers.ModelSerializer):
     """Dùng để đăng ký tài khoản mới"""

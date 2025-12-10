@@ -7,28 +7,33 @@ from pathlib import Path
 import os
 import environ # Cần cài: pip install django-environ
 
-# 1. Setup Environment Variables
+# 1. Định nghĩa BASE_DIR trước (QUAN TRỌNG: Phải đặt lên đầu)
 # ------------------------------------------------------------------------------
-env = environ.Env()
-# Đọc file .env nếu có
-environ.Env.read_env()
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# 2. General Settings
+# 2. Setup Environment Variables (Sau khi đã có BASE_DIR)
+# ------------------------------------------------------------------------------
+env = environ.Env()
+
+# Đọc file .env nằm ngay tại thư mục gốc (BASE_DIR)
+# os.path.join giúp tìm chính xác file dù bạn chạy lệnh ở đâu
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+
+# 3. General Settings
 # ------------------------------------------------------------------------------
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('DJANGO_DEBUG')
+DEBUG = env.bool('DJANGO_DEBUG', default=False)
 
-ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS')
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 
 
-# 3. Apps Definition
+# 4. Apps Definition
 # ------------------------------------------------------------------------------
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -84,16 +89,15 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 
-# 4. Database
+# 5. Database
 # ------------------------------------------------------------------------------
-# Logic cũ của bạn quá dài. django-environ xử lý việc này chỉ với 1 dòng.
-# Nó tự động parse DATABASE_URL (postgres://...) hoặc fallback về sqlite.
+# Tự động parse DATABASE_URL (postgres://...) hoặc fallback về sqlite.
 DATABASES = {
-    'default': env.db('DATABASE_URL')
+    'default': env.db('DATABASE_URL', default=f'sqlite:///{BASE_DIR}/db.sqlite3')
 }
 
 
-# 5. Password Validation
+# 6. Password Validation
 # ------------------------------------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
     { 'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
@@ -103,15 +107,15 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# 6. Internationalization
+# 7. Internationalization
 # ------------------------------------------------------------------------------
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC' # Khuyến nghị giữ UTC cho Backend, Frontend sẽ tự convert sang giờ VN
+TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
 
-# 7. Static & Media Files
+# 8. Static & Media Files
 # ------------------------------------------------------------------------------
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -120,7 +124,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 
-# 8. Django REST Framework & JWT
+# 9. Django REST Framework & JWT
 # ------------------------------------------------------------------------------
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -131,7 +135,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-# Cấu hình JWT (Optional - Thêm vào để kiểm soát thời gian sống của token)
+# Cấu hình JWT
 from datetime import timedelta
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60), # Token sống 60 phút
@@ -139,10 +143,7 @@ SIMPLE_JWT = {
 }
 
 
-# 9. CORS Configuration (Kết nối với Remix)
+# 10. CORS Configuration (Kết nối với Remix)
 # ------------------------------------------------------------------------------
-# Thay vì allow all (nguy hiểm), chỉ cho phép Remix port
-CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS')
-
-# Nếu cần gửi Cookie/Auth headers qua CORS
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=["http://localhost:3000"])
 CORS_ALLOW_CREDENTIALS = True
